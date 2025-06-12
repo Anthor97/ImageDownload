@@ -73,9 +73,29 @@ if uploaded_file and run_clicked:
         st.success("Running script...")
 
         # === Load secrets ===
-        CLIENT_ID = st.secrets["CLIENT_ID"]
-        CLIENT_SECRET = st.secrets["CLIENT_SECRET"]
-        COUPA_INSTANCE = st.secrets["COUPA_INSTANCE"]
+        import yaml
+
+def load_secrets(file_path='secrets.yaml'):
+    with open(file_path, 'r') as f:
+        secrets = yaml.safe_load(f)
+    return secrets
+
+# Example usage
+secrets = load_secrets()
+
+api_info = secrets.get('api_info', {})
+
+api_name = api_info.get('name')
+identifier = api_info.get('identifier')
+grant_type = api_info.get('grant_type')
+secret = api_info.get('secret')
+coupa_instance = api_info.get('COUPA_INSTANCE')
+
+print(f"API Name: {api_name}")
+print(f"Identifier: {identifier}")
+print(f"Grant Type: {grant_type}")
+print(f"Secret: {secret}")
+print(f"Coupa Instance URL: {coupa_instance}")
 
         # === Authenticate with Coupa ===
         token_url = f"https://{COUPA_INSTANCE}.coupahost.com/oauth2/token"
@@ -86,7 +106,7 @@ if uploaded_file and run_clicked:
         token_headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         with st.spinner("🔐 Authenticating with Coupa..."):
-            response = request("POST", token_url, auth=(CLIENT_ID, CLIENT_SECRET), data=token_data, headers=token_headers)
+            response = request("POST", token_url, auth=(identifier, secret), data=token_data, headers=token_headers)
             response.raise_for_status()
 
         access_token = response.json()["access_token"]
