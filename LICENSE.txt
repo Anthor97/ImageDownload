@@ -1,0 +1,20 @@
+Copyright (c) 2025 Hayden Meyer
+
+Permission is hereby granted to individuals and organizations to use this software (the "App") for the purpose of downloading invoice image scans from Coupa, subject to the following conditions:
+
+1. Discretionary Use  
+   Use of this App is granted entirely at the discretion of the author (Hayden Meyer). Access may be modified, limited, or revoked at any time without notice.
+
+2. Fees and Charges  
+   Use of this App may be subject to usage-based fees, subscription charges, or licensing costs at the discretion of the author. Any such terms will be communicated prior to application.
+
+3. No Warranty  
+   This App is provided “as is,” without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, or non-infringement.
+
+4. Liability  
+   In no event shall the author be liable for any claim, damages, or other liability arising from the use of this App.
+
+5. Restrictions  
+   Users may not redistribute, resell, or modify this App without express written permission from the author.
+
+By using this App, you agree to the above terms and conditions.
