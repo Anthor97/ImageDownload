@@ -73,16 +73,16 @@ if uploaded_file and run_clicked:
         st.success("Running script...")
 
         # === Load secrets from Streamlit Secrets Management ===
-        api_info = st.secrets.get("api_info", {})
+        import os
+        api_name = os.environ.get("API_NAME")
+        identifier = os.environ.get("IDENTIFIER")
+        grant_type = os.environ.get("GRANT_TYPE", "client_credentials")  # default fallback
+        secret = os.environ.get("SECRET")
+        COUPA_INSTANCE = os.environ.get("COUPA_INSTANCE")
 
-        api_name = api_info.get('name')
-        identifier = api_info.get('identifier')
-        grant_type = api_info.get('grant_type')
-        secret = api_info.get('secret')
-        COUPA_INSTANCE = api_info.get('COUPA_INSTANCE')
 
-        st.write(f"API Name: {api_name}")
-        st.write(f"Identifier: {identifier}")
+        st.write(f"API Name: {API_NAME}")
+        st.write(f"Identifier: {IDENTIFIER}")
         st.write(f"Grant Type: {grant_type}")
         st.write(f"Coupa Instance URL: {COUPA_INSTANCE}")
 
