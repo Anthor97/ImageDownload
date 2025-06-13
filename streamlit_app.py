@@ -73,15 +73,17 @@ if uploaded_file and run_clicked:
         st.success("Running script...")
 
         # === Load secrets from Streamlit Secrets Management ===
-        import os
-        identifier = os.environ.get("IDENTIFIER")
-        grant_type = os.environ.get("GRANT_TYPE", "client_credentials")  # default fallback
-        secret = os.environ.get("SECRET")
-        COUPA_INSTANCE = os.environ.get("COUPA_INSTANCE")
+import os
+import streamlit as st
 
-        st.write(f"Identifier: {IDENTIFIER}")
-        st.write(f"Grant Type: {grant_type}")
-        st.write(f"Coupa Instance URL: {COUPA_INSTANCE}")
+identifier = os.environ.get("IDENTIFIER")
+grant_type = os.environ.get("GRANT_TYPE", "client_credentials")  # default fallback
+secret = os.environ.get("SECRET")
+COUPA_INSTANCE = os.environ.get("COUPA_INSTANCE")
+
+st.write(f"Identifier: {identifier}")
+st.write(f"Grant Type: {grant_type}")
+st.write(f"Coupa Instance URL: {COUPA_INSTANCE}")
 
         # === Authenticate with Coupa ===
         token_url = f"https://{COUPA_INSTANCE}.coupahost.com/oauth2/token"
