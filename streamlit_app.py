@@ -72,30 +72,19 @@ if uploaded_file and run_clicked:
     try:
         st.success("Running script...")
 
-        # === Load secrets ===
-        import yaml
+        # === Load secrets from Streamlit Secrets Management ===
+        api_info = st.secrets.get("api_info", {})
 
-def load_secrets(file_path='secrets.yaml'):
-    with open(file_path, 'r') as f:
-        secrets = yaml.safe_load(f)
-    return secrets
+        api_name = api_info.get('name')
+        identifier = api_info.get('identifier')
+        grant_type = api_info.get('grant_type')
+        secret = api_info.get('secret')
+        COUPA_INSTANCE = api_info.get('COUPA_INSTANCE')
 
-# Example usage
-secrets = load_secrets()
-
-api_info = secrets.get('api_info', {})
-
-api_name = api_info.get('name')
-identifier = api_info.get('identifier')
-grant_type = api_info.get('grant_type')
-secret = api_info.get('secret')
-coupa_instance = api_info.get('COUPA_INSTANCE')
-
-print(f"API Name: {api_name}")
-print(f"Identifier: {identifier}")
-print(f"Grant Type: {grant_type}")
-print(f"Secret: {secret}")
-print(f"Coupa Instance URL: {coupa_instance}")
+        st.write(f"API Name: {api_name}")
+        st.write(f"Identifier: {identifier}")
+        st.write(f"Grant Type: {grant_type}")
+        st.write(f"Coupa Instance URL: {COUPA_INSTANCE}")
 
         # === Authenticate with Coupa ===
         token_url = f"https://{COUPA_INSTANCE}.coupahost.com/oauth2/token"
