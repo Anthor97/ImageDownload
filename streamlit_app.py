@@ -76,14 +76,17 @@ if uploaded_file and run_clicked:
 import os
 import streamlit as st
 
-identifier = os.environ.get("IDENTIFIER")
-grant_type = os.environ.get("GRANT_TYPE", "client_credentials")  # default fallback
-secret = os.environ.get("SECRET")
-COUPA_INSTANCE = os.environ.get("COUPA_INSTANCE")
+try:
+    identifier = os.environ.get("IDENTIFIER")
+    grant_type = os.environ.get("GRANT_TYPE", "client_credentials")  # default fallback
+    secret = os.environ.get("SECRET")
+    COUPA_INSTANCE = os.environ.get("COUPA_INSTANCE")
 
-st.write(f"Identifier: {identifier}")
-st.write(f"Grant Type: {grant_type}")
-st.write(f"Coupa Instance URL: {COUPA_INSTANCE}")
+    st.write(f"Identifier: {identifier}")
+    st.write(f"Grant Type: {grant_type}")
+    st.write(f"Coupa Instance URL: {COUPA_INSTANCE}")
+except Exception as e:
+    st.error(f"An error occurred: {e}")
 
         # === Authenticate with Coupa ===
         token_url = f"https://{COUPA_INSTANCE}.coupahost.com/oauth2/token"
