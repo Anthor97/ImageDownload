@@ -17,34 +17,46 @@ st.set_page_config(
 st.markdown("""
     <style>
         body {
-            color: white;
-            background-color: #121212;
+            color: #000000;
+            background-color: #ffffff;
         }
         .stApp {
-            background-color: #1E1E1E;
+            background-color: #ffffff;
             font-family: 'Segoe UI', sans-serif;
+            padding: 2em;
         }
         h1, h2, h3, h4, h5 {
-            color: #E1E1E1;
+            color: #000000;
         }
         .stButton>button {
-            background-color: #d3d3d3;
-            color: #000;
+            background-color: #ff5500;
+            color: #ffffff;
+            border: none;
             border-radius: 6px;
             height: 3em;
-            width: 25%;
+            width: 200px;
             font-weight: bold;
-            margin-top: 0.5em;
+            margin-top: 1em;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .stButton>button:hover {
+            background-color: #e64a00;
         }
         .stTextInput>div>input {
-            background-color: #2A2A2A;
-            color: #E1E1E1;
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px solid #ccc;
+            padding: 0.5em;
+            border-radius: 4px;
+            width: 100%;
         }
         .top-right {
             position: absolute;
             top: 10px;
             right: 20px;
-            color: #888;
+            color: #ff5500;
             font-weight: 500;
             font-size: 125%;
         }
@@ -56,7 +68,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # === UI Title ===
-st.markdown("<h1 style='color:#fcfcfc;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:#ff5500;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
 st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
 
 # === Step 1: Upload CSV ===
