@@ -16,6 +16,11 @@ st.set_page_config(
 # === Custom Dark Theme Styling ===
 st.markdown("""
     <style>
+        /* Remove Streamlit header and toolbar */
+        header, .st-emotion-cache-18ni7ap {
+            display: none;
+        }
+
         body {
             color: #000000;
             background-color: #ffffff;
@@ -25,10 +30,10 @@ st.markdown("""
             font-family: 'Segoe UI', sans-serif;
             padding: 2em;
         }
-        h1, h2, h3, h4, h5 {
+        h1, h2, h3, h4, h5, p, span, label, div {
             color: #000000;
         }
-        .stButton>button {
+        .stButton > button {
             background-color: #ff5500;
             color: #ffffff;
             border: none;
@@ -41,10 +46,10 @@ st.markdown("""
             font-size: 1em;
             transition: background-color 0.3s ease;
         }
-        .stButton>button:hover {
+        .stButton > button:hover {
             background-color: #e64a00;
         }
-        .stTextInput>div>input {
+        .stTextInput > div > input {
             background-color: #ffffff;
             color: #000000;
             border: 1px solid #ccc;
