@@ -14,137 +14,60 @@ st.set_page_config(
 )
 
 # === Custom Dark Theme Styling ===
-import streamlit as st
-
-# Custom CSS for styling to match the screenshot
 st.markdown("""
     <style>
-        /* Hide Streamlit default header & footer */
-        header, footer, .css-1v3fvcr {
-            display: none;
-        }
-
-        /* Body style */
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #fff;
-            color: #000;
-            padding: 2rem 3rem;
-        }
-
-        h1 {
-            font-weight: 600;
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Bold labels in instructions */
-        .bold-label {
-            font-weight: 600;
-            margin-right: 0.25rem;
-        }
-
-        /* Step container with margin */
-        .step {
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
-        }
-
-        /* Numbered steps with spacing */
-        ol {
-            padding-left: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        /* Inline container for button next to text */
-        .inline-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Style for Download dropdown button */
-        .download-btn select {
-            height: 30px;
-            border-radius: 3px;
-            border: 1px solid #ccc;
-            padding: 0 0.5rem;
-        }
-
-        /* Style file uploader width */
-        .file-uploader {
-            width: 280px;
-            margin-top: 0.4rem;
-        }
-
-        /* Note text style */
-        .note-text {
-            font-size: 0.9rem;
-            color: #444;
-            margin-top: 0.5rem;
-        }
-
-        /* Start Upload button style */
-        .stButton > button {
-            background-color: #0b75c9;
             color: white;
-            font-weight: 600;
-            height: 35px;
-            width: 120px;
-            border-radius: 4px;
-            float: right;
-            margin-top: -40px;
+            background-color: #121212;
         }
-        .stButton > button:hover {
-            background-color: #095a9d;
+        .stApp {
+            background-color: #1E1E1E;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        h1, h2, h3, h4, h5 {
+            color: #E1E1E1;
+        }
+        .stButton>button {
+            background-color: #d3d3d3;
+            color: #000;
+            border-radius: 6px;
+            height: 3em;
+            width: 25%;
+            font-weight: bold;
+            margin-top: 0.5em;
+        }
+        .stTextInput>div>input {
+            background-color: #2A2A2A;
+            color: #E1E1E1;
+        }
+        .top-right {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #888;
+            font-weight: 500;
+            font-size: 125%;
+        }
+        .custom-upload {
+            width: 25%;
         }
     </style>
+    <div class='top-right'>Hayden Meyer</div>
 """, unsafe_allow_html=True)
 
-# Title
-st.markdown("<h1>Bulk Load Requisition</h1>", unsafe_allow_html=True)
+# === UI Title ===
+st.markdown("<h1 style='color:#fcfcfc;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
+st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
 
-# Instructions with steps and bold text formatting
-st.markdown("""
-    <ol>
-        <li class="step">
-            <span class="bold-label">Download</span> the CSV template (Based on the CSV File Field Separator in your Language and Region settings.)
-            <div class="inline-btn download-btn">
-                <select>
-                    <option>Download</option>
-                    <option>Template 1</option>
-                    <option>Template 2</option>
-                </select>
-            </div>
-        </li>
+# === Step 1: Upload CSV ===
+st.subheader("Step 1: Upload CSV File")
+st.markdown('<div class="custom-upload">', unsafe_allow_html=True)
+uploaded_file = st.file_uploader("Choose a CSV file with an 'Invoice ID' column", type=["csv"])
+st.markdown('</div>', unsafe_allow_html=True)
 
-        <li class="step">
-            <span class="bold-label">Fill in or update the CSV file.</span>
-            <ul>
-                <li>Fields marked with a <strong>"*"</strong> are mandatory.</li>
-                <li>Each row uploaded will create a new requisition.</li>
-                <li>Click Start Upload and the system will verify the file using the first 6 rows, and load the file if no errors are found.</li>
-            </ul>
-        </li>
-
-        <li class="step">
-            <span class="bold-label">Load the updated file</span>
-            <div class="file-uploader">
-""", unsafe_allow_html=True)
-
-uploaded_file = st.file_uploader("", type=["csv"])
-
-st.markdown("""
-            </div>
-        </li>
-    </ol>
-    <div class="note-text">
-        Note: If you are loading csv files with non-English characters, please consult the following <a href="#" target="_blank">help note</a>.
-    </div>
-""", unsafe_allow_html=True)
-
-start_upload = st.button("Start Upload")
-
+# === Step 2: Run Script ===
+st.subheader("Step 2: Run Script")
+run_clicked = st.button("Run")
 
 if uploaded_file and run_clicked:
     try:
