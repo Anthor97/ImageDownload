@@ -42,6 +42,10 @@ st.markdown("""
             background-color: #ffffff !important;
             color: #000000 !important;
         }
+        /* Drag-and-drop area text color */
+        .stFileUploader label, .stFileUploader div {
+            color: #ffffff !important;
+        }
         .top-right {
             position: absolute !important;
             top: 10px !important;
