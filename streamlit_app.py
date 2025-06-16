@@ -98,9 +98,9 @@ if uploaded_file and run_clicked:
         secret = os.environ.get("SECRET")
         COUPA_INSTANCE = os.environ.get("COUPA_INSTANCE")
 
-        st.write(f"Identifier: {identifier}")
-        st.write(f"Grant Type: {grant_type}")
-        st.write(f"Coupa Instance URL: {COUPA_INSTANCE}")
+        #st.write(f"Identifier: {identifier}")
+        #st.write(f"Grant Type: {grant_type}")
+        #st.write(f"Coupa Instance URL: {COUPA_INSTANCE}")
 
         # === Authenticate with Coupa ===
         token_url = f"https://{COUPA_INSTANCE}.coupahost.com/oauth2/token"
