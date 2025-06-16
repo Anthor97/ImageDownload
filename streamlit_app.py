@@ -143,6 +143,8 @@ if uploaded_file and run_clicked:
                 return re.sub(r'[\\/*?:"<>|]', "", str(s).strip())
 
             zip_buffer = io.BytesIO()
+            failed_rows = []
+
             with zipfile.ZipFile(zip_buffer, "w") as zip_file:
                 progress = st.progress(0)
                 status = st.empty()
@@ -155,7 +157,7 @@ if uploaded_file and run_clicked:
                     created_date_raw = str(row[column_mapping["created date"]])
                     created_date = sanitize_filename(created_date_raw.split("T")[0] if "T" in created_date_raw else created_date_raw)
 
-                    filename = f"{supplier_name} - [{invoice_num}] - {created_date}.pdf"
+                    filename = f"{supplier_name} - {invoice_num} - {created_date}.pdf"
 
                     scan_url = f"https://{COUPA_INSTANCE}.coupahost.com/api/invoices/{invoice_id}/retrieve_image_scan"
                     resp = request("GET", scan_url, headers=headers)
@@ -166,6 +168,9 @@ if uploaded_file and run_clicked:
                         status.success(f"Downloaded {invoice_id}")
                     else:
                         status.warning(f"Failed to download {invoice_id} (Status: {resp.status_code})")
+                        failed_row = row.to_dict()
+                        failed_row["Download Status"] = f"Failed ({resp.status_code})"
+                        failed_rows.append(failed_row)
 
                     progress.progress((i + 1) / len(invoice_ids))
 
@@ -178,6 +183,20 @@ if uploaded_file and run_clicked:
                 mime="application/zip"
             )
 
+            # === Prepare Failed Invoices Report ===
+            if failed_rows:
+                failed_df = pd.DataFrame(failed_rows)
+                failed_csv = failed_df.to_csv(index=False).encode("utf-8")
+
+                st.warning(f"{len(failed_rows)} invoice(s) failed to download. You can download the report below.")
+                st.download_button(
+                    label="Download Failed Invoices CSV",
+                    data=failed_csv,
+                    file_name="failed_invoices.csv",
+                    mime="text/csv"
+                )
+
     except Exception as e:
         st.error(f"Error: {e}")
+
 
