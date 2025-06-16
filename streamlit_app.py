@@ -35,10 +35,10 @@ st.markdown("""
             width: 25%;
             font-weight: bold;
             margin-top: 0.5em;
-        }
+          }
         .stTextInput>div>input {
-            background-color: #2A2A2A;
-            color: #E1E1E1;
+            background-color: #ffffff;
+            color: #000000;
         }
         .top-right {
             position: absolute;
