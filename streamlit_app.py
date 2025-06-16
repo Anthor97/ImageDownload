@@ -15,20 +15,20 @@ st.set_page_config(
 
 # === Custom Dark Theme Styling ===
 st.markdown("""
-    <style>
+   <style>
         body {
-            color: white;
-            background-color: #121212;
+            color: black;
+            background-color: #ffffff;
         }
         .stApp {
-            background-color: #1E1E1E;
+            background-color: #ffffff;
             font-family: 'Segoe UI', sans-serif;
         }
         h1, h2, h3, h4, h5 {
-            color: #E1E1E1;
+            color: #000;
         }
         .stButton>button {
-            background-color: #d3d3d3;
+            background-color: #ff5500;
             color: #000;
             border-radius: 6px;
             height: 3em;
@@ -44,7 +44,7 @@ st.markdown("""
             position: absolute;
             top: 10px;
             right: 20px;
-            color: #888;
+            color: #ff5500;
             font-weight: 500;
             font-size: 125%;
         }
@@ -56,7 +56,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # === UI Title ===
-st.markdown("<h1 style='color:#fcfcfc;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
 st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
 
 # === Step 1: Upload CSV ===
@@ -66,7 +66,7 @@ uploaded_file = st.file_uploader("Choose a CSV file with an 'Invoice ID' column"
 st.markdown('</div>', unsafe_allow_html=True)
 
 # === Step 2: Run Script ===
-st.subheader("Step 2: Run Script")
+st.subheader("Step 2: Run Extraction")
 run_clicked = st.button("Run")
 
 if uploaded_file and run_clicked:
