@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import io
 import zipfile
+import re
 from requests import request
 
 # === Streamlit Page Config ===
@@ -104,6 +105,10 @@ st.markdown('</div>', unsafe_allow_html=True)
 st.subheader("Step 2: Run Extraction")
 run_clicked = st.button("Run")
 
+def sanitize_filename(s):
+    # Remove characters that are invalid in file names
+    return re.sub(r'[\\/*?:"<>|]', "", s)
+
 if uploaded_file and run_clicked:
     try:
         st.success("Running script...")
@@ -145,15 +150,35 @@ if uploaded_file and run_clicked:
                 status = st.empty()
 
                 for i, invoice_id in enumerate(invoice_ids):
-                    scan_url = f"https://{COUPA_INSTANCE}.coupahost.com/api/invoices/{invoice_id}/retrieve_image_scan"
-                    resp = request("GET", scan_url, headers=headers)
+                    # Get invoice details for Supplier Name, Invoice Number, Created Date
+                    invoice_url = f"https://{COUPA_INSTANCE}.coupahost.com/api/invoices/{invoice_id}"
+                    invoice_resp = request("GET", invoice_url, headers=headers)
 
-                    if resp.status_code == 200:
-                        pdf_bytes = resp.content
-                        zip_file.writestr(f"{invoice_id}_scan.pdf", pdf_bytes)
-                        status.success(f"✅ Downloaded {invoice_id}")
+                    if invoice_resp.status_code == 200:
+                        invoice_data = invoice_resp.json()
+                        supplier_name = invoice_data.get("supplier", {}).get("name", "UnknownSupplier")
+                        invoice_number = invoice_data.get("invoice_number", invoice_id)
+                        created_at = invoice_data.get("created_at", "")  # e.g. '2025-06-16T12:34:56Z'
+
+                        created_date = created_at.split("T")[0] if "T" in created_at else created_at
+
+                        # Sanitize for filename safety
+                        supplier_name = sanitize_filename(supplier_name)
+                        invoice_number = sanitize_filename(invoice_number)
+
+                        # Get PDF scan
+                        scan_url = f"https://{COUPA_INSTANCE}.coupahost.com/api/invoices/{invoice_id}/retrieve_image_scan"
+                        resp = request("GET", scan_url, headers=headers)
+
+                        if resp.status_code == 200:
+                            pdf_bytes = resp.content
+                            file_name = f"{supplier_name} - [{invoice_number}] - {created_date}.pdf"
+                            zip_file.writestr(file_name, pdf_bytes)
+                            status.success(f"✅ Downloaded {file_name}")
+                        else:
+                            status.warning(f"⚠️ Failed to download scan for {invoice_id} (Status: {resp.status_code})")
                     else:
-                        status.warning(f"⚠️ Failed to download {invoice_id} (Status: {resp.status_code})")
+                        status.warning(f"⚠️ Failed to retrieve invoice details for {invoice_id} (Status: {invoice_resp.status_code})")
 
                     progress.progress((i + 1) / len(invoice_ids))
 
