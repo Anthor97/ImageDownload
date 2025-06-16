@@ -27,15 +27,16 @@ st.markdown("""
     }
 
     /* === BUTTON === */
-    .stButton>button {
-        background-color: #ff5500 !important;
-        color: #000000 !important;
-        border-radius: 6px !important;
-        height: 3em !important;
-        width: 25% !important;
-        font-weight: bold !important;
-        margin-top: 0.5em !important;
-    }
+.stButton>button {
+    background-color: #ff5500 !important;
+    color: #ffffff !important;
+    border-radius: 6px !important;
+    height: 3em !important;
+    width: 25% !important;
+    font-weight: bold !important;
+    font-size: 1.2rem !important;  /* <-- makes text larger */
+    margin-top: 0.5em !important;
+}
 
     /* === TEXT INPUT === */
     .stTextInput>div>input {
@@ -74,7 +75,19 @@ st.markdown("""
     }
 </style>
 <div class='top-right'>Hayden Meyer</div>
+
+/* === DOWNLOAD BUTTON === */
+.stDownloadButton>button {
+    background-color: #ff5500 !important;
+    color: #ffffff !important;
+    border-radius: 6px !important;
+    height: 3em !important;
+    width: 25% !important;
+    font-weight: bold !important;
+    margin-top: 1em !important;
+}
 """, unsafe_allow_html=True)
+
 
 # === UI Title ===
 st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
