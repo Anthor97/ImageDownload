@@ -13,69 +13,67 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 # === Custom Light Theme Styling ===
-
 st.markdown("""
-st.markdown("""
-    <style>
-        /* Global styling */
-        body, .stApp {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            font-family: 'Segoe UI', sans-serif !important;
-        }
+<style>
+    /* Global styling */
+    body, .stApp {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-family: 'Segoe UI', sans-serif !important;
+    }
 
-        h1, h2, h3, h4, h5, p, span, div, label {
-            color: #000000 !important;
-        }
+    h1, h2, h3, h4, h5, p, span, div, label {
+        color: #000000 !important;
+    }
 
-        /* === BUTTON === */
-        .stButton>button {
-            background-color: #ff5500 !important;
-            color: #000000 !important;
-            border-radius: 6px !important;
-            height: 3em !important;
-            width: 25% !important;
-            font-weight: bold !important;
-            margin-top: 0.5em !important;
-        }
+    /* === BUTTON === */
+    .stButton>button {
+        background-color: #ff5500 !important;
+        color: #000000 !important;
+        border-radius: 6px !important;
+        height: 3em !important;
+        width: 25% !important;
+        font-weight: bold !important;
+        margin-top: 0.5em !important;
+    }
 
-        /* === TEXT INPUT === */
-        .stTextInput>div>input {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }
+    /* === TEXT INPUT === */
+    .stTextInput>div>input {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+    }
 
-        /* === FILE UPLOADER === */
-        .stFileUploader > div:first-child {
-            background-color: transparent !important; /* removes black background */
-        }
+    /* === FILE UPLOADER === */
+    .stFileUploader > div:first-child {
+        background-color: transparent !important;
+    }
 
-        .stFileUploader label,
-        .stFileUploader div span,
-        .stFileUploader div div {
-            color: #ffffff !important;  /* makes drop area text white */
-        }
+    .stFileUploader label,
+    .stFileUploader div span,
+    .stFileUploader div div {
+        color: #ffffff !important;
+    }
 
-        /* === TOP BLACK BAR === */
-        header[data-testid="stHeader"] {
-            background-color: #ffffff !important;  /* makes top bar white */
-        }
+    /* === TOP BLACK BAR === */
+    header[data-testid="stHeader"] {
+        background-color: #ffffff !important;
+    }
 
-        /* === CUSTOM POSITION === */
-        .top-right {
-            position: absolute !important;
-            top: 10px !important;
-            right: 20px !important;
-            color: #ff5500 !important;
-            font-weight: 500 !important;
-            font-size: 125% !important;
-        }
+    /* === TOP-RIGHT NAME === */
+    .top-right {
+        position: absolute !important;
+        top: 10px !important;
+        right: 20px !important;
+        color: #ff5500 !important;
+        font-weight: 500 !important;
+        font-size: 125% !important;
+    }
 
-        .custom-upload {
-            width: 25% !important;
-        }
-    </style>
-    <div class='top-right'>Hayden Meyer</div>
+    .custom-upload {
+        width: 25% !important;
+    }
+</style>
+<div class='top-right'>Hayden Meyer</div>
 """, unsafe_allow_html=True)
 
 # === UI Title ===
