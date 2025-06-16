@@ -115,18 +115,29 @@ if uploaded_file and run_clicked:
             "Accept": "application/json"
         }
 
-        # === Load and clean CSV ===
+        # === Load and normalize CSV ===
         raw_csv = uploaded_file.getvalue().decode("utf-8")
         delimiter = "\t" if "\t" in raw_csv else ","
         df = pd.read_csv(io.StringIO(raw_csv), delimiter=delimiter)
-        df.columns = [col.strip() for col in df.columns]
 
-        required_cols = ["Invoice ID", "Invoice #", "Supplier", "created date"]
-        missing_cols = [col for col in required_cols if col not in df.columns]
+        # Normalize column headers
+        original_columns = df.columns.tolist()
+        col_map = {col.strip().lower(): col.strip() for col in original_columns}
+        df.columns = [col_map.get(col.strip().lower(), col) for col in df.columns]
+
+        # Required fields and column mapping
+        expected = ["invoice id", "invoice #", "supplier", "created date"]
+        column_mapping = {}
+        for key in expected:
+            match = [col for col in df.columns if col.strip().lower() == key]
+            if match:
+                column_mapping[key] = match[0]
+
+        missing_cols = [key for key in expected if key not in column_mapping]
         if missing_cols:
             st.error(f"CSV is missing required columns: {', '.join(missing_cols)}")
         else:
-            invoice_ids = df["Invoice ID"].dropna().astype(str).tolist()
+            invoice_ids = df[column_mapping["invoice id"]].dropna().astype(str).tolist()
 
             def sanitize_filename(s):
                 return re.sub(r'[\\/*?:"<>|]', "", str(s).strip())
@@ -137,10 +148,12 @@ if uploaded_file and run_clicked:
                 status = st.empty()
 
                 for i, invoice_id in enumerate(invoice_ids):
-                    row = df[df["Invoice ID"].astype(str) == invoice_id].iloc[0]
-                    invoice_num = sanitize_filename(row["Invoice #"])
-                    supplier_name = sanitize_filename(row["Supplier"])
-                    created_date = sanitize_filename(str(row["created date"]).split("T")[0])
+                    row = df[df[column_mapping["invoice id"]].astype(str) == invoice_id].iloc[0]
+
+                    invoice_num = sanitize_filename(row[column_mapping["invoice #"]])
+                    supplier_name = sanitize_filename(row[column_mapping["supplier"]])
+                    created_date_raw = str(row[column_mapping["created date"]])
+                    created_date = sanitize_filename(created_date_raw.split("T")[0] if "T" in created_date_raw else created_date_raw)
 
                     filename = f"{supplier_name} - [{invoice_num}] - {created_date}.pdf"
 
@@ -167,3 +180,4 @@ if uploaded_file and run_clicked:
 
     except Exception as e:
         st.error(f"Error: {e}")
+
