@@ -76,8 +76,12 @@ st.markdown("""
 # === State Initialization ===
 if "zip_buffer" not in st.session_state:
     st.session_state.zip_buffer = None
+if "failed_rows" not in st.session_state:
+    st.session_state.failed_rows = []
 if "processed" not in st.session_state:
     st.session_state.processed = False
+if "downloaded" not in st.session_state:
+    st.session_state.downloaded = False
 
 # === UI Title ===
 st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
@@ -149,6 +153,7 @@ if not st.session_state.processed:
 
                 zip_buffer = io.BytesIO()
                 failed_rows = []
+                pdf_files = []
 
                 with zipfile.ZipFile(zip_buffer, "w") as zip_file:
                     progress = st.progress(0)
@@ -168,8 +173,7 @@ if not st.session_state.processed:
                         resp = request("GET", scan_url, headers=headers)
 
                         if resp.status_code == 200:
-                            pdf_bytes = resp.content
-                            zip_file.writestr(filename, pdf_bytes)
+                            pdf_files.append((filename, resp.content))
                             status.success(f"Downloaded {invoice_id}")
                         else:
                             status.warning(f"Failed to download {invoice_id} (Status: {resp.status_code})")
@@ -179,24 +183,34 @@ if not st.session_state.processed:
 
                         progress.progress((i + 1) / len(invoice_ids))
 
+                    # Write failed CSV first
                     if failed_rows:
                         failed_df = pd.DataFrame(failed_rows)
                         failed_csv = failed_df.to_csv(index=False).encode("utf-8")
                         zip_file.writestr("failed_invoices.csv", failed_csv)
 
+                    # Then write all PDFs
+                    for filename, pdf_bytes in pdf_files:
+                        zip_file.writestr(filename, pdf_bytes)
+
                 zip_buffer.seek(0)
                 st.session_state.zip_buffer = zip_buffer
+                st.session_state.failed_rows = failed_rows
                 st.session_state.processed = True
+                st.session_state.downloaded = False
 
         except Exception as e:
             st.error(f"Error: {e}")
 
 # === Show Download ===
-if st.session_state.processed and st.session_state.zip_buffer:
-    st.success("All done! Download the ZIP file containing PDFs and failed invoice report below.")
-    st.download_button(
+if st.session_state.processed and st.session_state.zip_buffer and not st.session_state.downloaded:
+    st.success("All done! Download the ZIP file containing PDFs and failed report (if any).")
+    if st.download_button(
         label="Download ZIP",
         data=st.session_state.zip_buffer,
         file_name="coupa_invoice_scans.zip",
         mime="application/zip"
-    )
+    ):
+        # Reset session after download
+        st.session_state.clear()
+        st.experimental_rerun()
