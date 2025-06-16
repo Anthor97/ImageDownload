@@ -51,6 +51,9 @@ st.markdown("""
         color: #ffffff !important;
         fill: #ffffff !important;
     }
+    .st-emotion-cache-1ayxkht {
+        background-color: #ffffff !important;
+    }
     .top-right {
         position: absolute !important;
         top: 10px !important;
@@ -65,6 +68,7 @@ st.markdown("""
 </style>
 <div class='top-right'>Hayden Meyer</div>
 """, unsafe_allow_html=True)
+
 # === UI Title ===
 st.markdown("<h1>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
 st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
