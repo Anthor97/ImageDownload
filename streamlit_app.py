@@ -76,20 +76,12 @@ st.markdown("""
 # === State Initialization ===
 if "zip_buffer" not in st.session_state:
     st.session_state.zip_buffer = None
-if "failed_rows" not in st.session_state:
-    st.session_state.failed_rows = []
 if "processed" not in st.session_state:
     st.session_state.processed = False
 
 # === UI Title ===
 st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
 st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
-
-# === Refresh Button ===
-if st.session_state.processed:
-    if st.button("Clear All & Start Over"):
-        st.session_state.clear()
-        st.experimental_rerun()
 
 # === Step 1: Upload CSV ===
 if not st.session_state.processed:
@@ -187,32 +179,24 @@ if not st.session_state.processed:
 
                         progress.progress((i + 1) / len(invoice_ids))
 
+                    if failed_rows:
+                        failed_df = pd.DataFrame(failed_rows)
+                        failed_csv = failed_df.to_csv(index=False).encode("utf-8")
+                        zip_file.writestr("failed_invoices.csv", failed_csv)
+
                 zip_buffer.seek(0)
                 st.session_state.zip_buffer = zip_buffer
-                st.session_state.failed_rows = failed_rows
                 st.session_state.processed = True
 
         except Exception as e:
             st.error(f"Error: {e}")
 
-# === Show Downloads ===
+# === Show Download ===
 if st.session_state.processed and st.session_state.zip_buffer:
-    st.success("All done! Download the ZIP file containing PDFs below.")
+    st.success("All done! Download the ZIP file containing PDFs and failed invoice report below.")
     st.download_button(
         label="Download ZIP",
         data=st.session_state.zip_buffer,
         file_name="coupa_invoice_scans.zip",
         mime="application/zip"
     )
-
-    if st.session_state.failed_rows:
-        failed_df = pd.DataFrame(st.session_state.failed_rows)
-        failed_csv = failed_df.to_csv(index=False).encode("utf-8")
-
-        st.warning(f"{len(st.session_state.failed_rows)} invoice(s) failed to download. You can download the report below.")
-        st.download_button(
-            label="Download Failed Invoices CSV",
-            data=failed_csv,
-            file_name="failed_invoices.csv",
-            mime="text/csv"
-        )
