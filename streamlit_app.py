@@ -17,7 +17,6 @@ st.set_page_config(
 # === Custom Styling ===
 st.markdown("""
 <style>
-    /* Global styling */
     body, .stApp {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -88,10 +87,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 st.subheader("Step 2: Run Extraction")
 run_clicked = st.button("Run")
 
-# === Sanitize for file naming ===
-def sanitize_filename(s):
-    return re.sub(r'[\\/*?:"<>|]', "", str(s))
-
 if uploaded_file and run_clicked:
     try:
         st.success("Running script...")
@@ -109,7 +104,7 @@ if uploaded_file and run_clicked:
         }
         token_headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        with st.spinner("🔐 Authenticating with Coupa..."):
+        with st.spinner("Authenticating with Coupa..."):
             response = request("POST", token_url, auth=(identifier, secret), data=token_data, headers=token_headers)
             response.raise_for_status()
 
@@ -120,39 +115,49 @@ if uploaded_file and run_clicked:
             "Accept": "application/json"
         }
 
-        # === Process Invoice IDs from CSV ===
-        df = pd.read_csv(uploaded_file, sep="\t" if "\t" in uploaded_file.getvalue().decode() else ",")
-        required_cols = ["Invoice ID", "Invoice #", "Supplier", "created date"]
+        # === Load and clean CSV ===
+        raw_csv = uploaded_file.getvalue().decode("utf-8")
+        delimiter = "\t" if "\t" in raw_csv else ","
+        df = pd.read_csv(io.StringIO(raw_csv), delimiter=delimiter)
+        df.columns = [col.strip() for col in df.columns]
 
-        if not all(col in df.columns for col in required_cols):
-            st.error(f"❌ CSV must contain columns: {', '.join(required_cols)}")
+        required_cols = ["Invoice ID", "Invoice #", "Supplier", "created date"]
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        if missing_cols:
+            st.error(f"CSV is missing required columns: {', '.join(missing_cols)}")
         else:
+            invoice_ids = df["Invoice ID"].dropna().astype(str).tolist()
+
+            def sanitize_filename(s):
+                return re.sub(r'[\\/*?:"<>|]', "", str(s).strip())
+
             zip_buffer = io.BytesIO()
             with zipfile.ZipFile(zip_buffer, "w") as zip_file:
                 progress = st.progress(0)
                 status = st.empty()
 
-                for i, row in df.iterrows():
-                    invoice_id = str(row["Invoice ID"]).strip()
+                for i, invoice_id in enumerate(invoice_ids):
+                    row = df[df["Invoice ID"].astype(str) == invoice_id].iloc[0]
                     invoice_num = sanitize_filename(row["Invoice #"])
                     supplier_name = sanitize_filename(row["Supplier"])
                     created_date = sanitize_filename(str(row["created date"]).split("T")[0])
+
+                    filename = f"{supplier_name} - [{invoice_num}] - {created_date}.pdf"
 
                     scan_url = f"https://{COUPA_INSTANCE}.coupahost.com/api/invoices/{invoice_id}/retrieve_image_scan"
                     resp = request("GET", scan_url, headers=headers)
 
                     if resp.status_code == 200:
                         pdf_bytes = resp.content
-                        filename = f"{supplier_name} - [{invoice_num}] - {created_date}.pdf"
                         zip_file.writestr(filename, pdf_bytes)
-                        status.success(f"✅ Downloaded {filename}")
+                        status.success(f"Downloaded {invoice_id}")
                     else:
-                        status.warning(f"⚠️ Failed to download scan for {invoice_id} (Status: {resp.status_code})")
+                        status.warning(f"Failed to download {invoice_id} (Status: {resp.status_code})")
 
-                    progress.progress((i + 1) / len(df))
+                    progress.progress((i + 1) / len(invoice_ids))
 
             zip_buffer.seek(0)
-            st.success(f"All done! Download the ZIP file containing PDFs below.")
+            st.success("All done! Download the ZIP file containing PDFs below.")
             st.download_button(
                 label="Download ZIP",
                 data=zip_buffer,
@@ -161,4 +166,4 @@ if uploaded_file and run_clicked:
             )
 
     except Exception as e:
-        st.error(f"❌ Error: {e}")
+        st.error(f"Error: {e}")
