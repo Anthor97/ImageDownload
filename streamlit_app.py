@@ -41,14 +41,16 @@ st.markdown("""
             background-color: #ffffff !important;
             color: #000000 !important;
         }
-        /* Drag-and-drop area text color */
-        .stFileUploader label, .stFileUploader div {
-            color: #ffffff !important;
-        }
         /* Fix black background behind uploader label */
         .stFileUploader > div:first-child {
             background-color: transparent !important;
-            color: #000000 !important;
+        }
+        /* Drag-and-drop area text color */
+        .stFileUploader label {
+            color: #ffffff !important;
+        }
+        .stFileUploader > div > div {
+            color: #ffffff !important;
         }
         .top-right {
             position: absolute !important;
@@ -64,7 +66,6 @@ st.markdown("""
     </style>
     <div class='top-right'>Hayden Meyer</div>
 """, unsafe_allow_html=True)
-
 # === UI Title ===
 st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
 st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
