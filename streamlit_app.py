@@ -12,7 +12,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-# === Custom Light Theme Styling ===
+
+# === Custom Styling ===
 st.markdown("""
 <style>
     /* Global styling */
@@ -27,16 +28,28 @@ st.markdown("""
     }
 
     /* === BUTTON === */
-.stButton>button {
-    background-color: #ff5500 !important;
-    color: #ffffff !important;
-    border-radius: 6px !important;
-    height: 3em !important;
-    width: 25% !important;
-    font-weight: bold !important;
-    font-size: 1.2rem !important;  /* <-- makes text larger */
-    margin-top: 0.5em !important;
-}
+    .stButton>button {
+        background-color: #ff5500 !important;
+        color: #ffffff !important;
+        border-radius: 6px !important;
+        height: 3em !important;
+        width: 25% !important;
+        font-weight: bold !important;
+        font-size: 1.2rem !important;
+        margin-top: 0.5em !important;
+    }
+
+    /* === DOWNLOAD BUTTON === */
+    .stDownloadButton>button {
+        background-color: #ff5500 !important;
+        color: #ffffff !important;
+        border-radius: 6px !important;
+        height: 3em !important;
+        width: 25% !important;
+        font-weight: bold !important;
+        font-size: 1.2rem !important;
+        margin-top: 1em !important;
+    }
 
     /* === TEXT INPUT === */
     .stTextInput>div>input {
@@ -75,19 +88,7 @@ st.markdown("""
     }
 </style>
 <div class='top-right'>Hayden Meyer</div>
-
-/* === DOWNLOAD BUTTON === */
-.stDownloadButton>button {
-    background-color: #ff5500 !important;
-    color: #ffffff !important;
-    border-radius: 6px !important;
-    height: 3em !important;
-    width: 25% !important;
-    font-weight: bold !important;
-    margin-top: 1em !important;
-}
 """, unsafe_allow_html=True)
-
 
 # === UI Title ===
 st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
@@ -102,18 +103,15 @@ st.markdown('</div>', unsafe_allow_html=True)
 # === Step 2: Run Script ===
 st.subheader("Step 2: Run Extraction")
 run_clicked = st.button("Run")
+
 if uploaded_file and run_clicked:
     try:
         st.success("Running script...")
 
         identifier = os.environ.get("IDENTIFIER")
-        grant_type = os.environ.get("GRANT_TYPE", "client_credentials")  # default fallback
+        grant_type = os.environ.get("GRANT_TYPE", "client_credentials")
         secret = os.environ.get("SECRET")
         COUPA_INSTANCE = os.environ.get("COUPA_INSTANCE")
-
-        #st.write(f"Identifier: {identifier}")
-        #st.write(f"Grant Type: {grant_type}")
-        #st.write(f"Coupa Instance URL: {COUPA_INSTANCE}")
 
         # === Authenticate with Coupa ===
         token_url = f"https://{COUPA_INSTANCE}.coupahost.com/oauth2/token"
