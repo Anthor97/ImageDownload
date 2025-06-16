@@ -4,6 +4,7 @@ import pandas as pd
 import io
 import zipfile
 import re
+from datetime import datetime
 from requests import request
 
 # === Streamlit Page Config ===
@@ -73,6 +74,12 @@ st.markdown("""
 <div class='top-right'>Hayden Meyer</div>
 """, unsafe_allow_html=True)
 
+# === ZIP Timestamp Helper ===
+def get_local_zipinfo(filename: str) -> zipfile.ZipInfo:
+    info = zipfile.ZipInfo(filename)
+    info.date_time = datetime.now().timetuple()[:6]
+    return info
+
 # === State Initialization ===
 if "zip_buffer" not in st.session_state:
     st.session_state.zip_buffer = None
@@ -87,14 +94,14 @@ if "downloaded" not in st.session_state:
 st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
 st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
 
-# === Step 1: Upload CSV ===
+# === Upload CSV ===
 if not st.session_state.processed:
     st.subheader("Step 1: Upload CSV File")
     st.markdown('<div class="custom-upload">', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Choose a CSV file with an 'Invoice ID' column", type=["csv"])
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # === Step 2: Run Script ===
+    # === Run Extraction ===
     st.subheader("Step 2: Run Extraction")
     run_clicked = st.button("Run")
 
@@ -107,7 +114,7 @@ if not st.session_state.processed:
             secret = os.environ.get("SECRET")
             COUPA_INSTANCE = os.environ.get("COUPA_INSTANCE")
 
-            # === Authenticate with Coupa ===
+            # === Authenticate ===
             token_url = f"https://{COUPA_INSTANCE}.coupahost.com/oauth2/token"
             token_data = {
                 "grant_type": "client_credentials",
@@ -126,7 +133,7 @@ if not st.session_state.processed:
                 "Accept": "application/json"
             }
 
-            # === Load and normalize CSV ===
+            # === Load CSV ===
             raw_csv = uploaded_file.getvalue().decode("utf-8")
             delimiter = "\t" if "\t" in raw_csv else ","
             df = pd.read_csv(io.StringIO(raw_csv), delimiter=delimiter)
@@ -153,11 +160,14 @@ if not st.session_state.processed:
 
                 zip_buffer = io.BytesIO()
                 failed_rows = []
-                pdf_files = []
 
                 with zipfile.ZipFile(zip_buffer, "w") as zip_file:
                     progress = st.progress(0)
                     status = st.empty()
+
+                    # Add empty CSV placeholder early
+                    failed_csv_bytes = b''
+                    zip_file.writestr(get_local_zipinfo("failed_invoices.csv"), failed_csv_bytes)
 
                     for i, invoice_id in enumerate(invoice_ids):
                         row = df[df[column_mapping["invoice id"]].astype(str) == invoice_id].iloc[0]
@@ -173,7 +183,7 @@ if not st.session_state.processed:
                         resp = request("GET", scan_url, headers=headers)
 
                         if resp.status_code == 200:
-                            pdf_files.append((filename, resp.content))
+                            zip_file.writestr(get_local_zipinfo(filename), resp.content)
                             status.success(f"Downloaded {invoice_id}")
                         else:
                             status.warning(f"Failed to download {invoice_id} (Status: {resp.status_code})")
@@ -183,26 +193,21 @@ if not st.session_state.processed:
 
                         progress.progress((i + 1) / len(invoice_ids))
 
-                    # Write failed CSV first
+                    # Overwrite failed CSV with data
                     if failed_rows:
                         failed_df = pd.DataFrame(failed_rows)
-                        failed_csv = failed_df.to_csv(index=False).encode("utf-8")
-                        zip_file.writestr("failed_invoices.csv", failed_csv)
-
-                    # Then write all PDFs
-                    for filename, pdf_bytes in pdf_files:
-                        zip_file.writestr(filename, pdf_bytes)
+                        failed_csv_bytes = failed_df.to_csv(index=False).encode("utf-8")
+                        zip_file.writestr(get_local_zipinfo("failed_invoices.csv"), failed_csv_bytes)
 
                 zip_buffer.seek(0)
                 st.session_state.zip_buffer = zip_buffer
                 st.session_state.failed_rows = failed_rows
                 st.session_state.processed = True
-                st.session_state.downloaded = False
 
         except Exception as e:
             st.error(f"Error: {e}")
 
-# === Show Download ===
+# === Show ZIP Download ===
 if st.session_state.processed and st.session_state.zip_buffer and not st.session_state.downloaded:
     st.success("All done! Download the ZIP file containing PDFs and failed report (if any).")
     if st.download_button(
@@ -211,6 +216,6 @@ if st.session_state.processed and st.session_state.zip_buffer and not st.session
         file_name="coupa_invoice_scans.zip",
         mime="application/zip"
     ):
-        # Reset session after download
+        st.session_state.downloaded = True
         st.session_state.clear()
-        st.experimental_rerun()
+        st.rerun()
