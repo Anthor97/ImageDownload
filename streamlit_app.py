@@ -14,49 +14,51 @@ st.set_page_config(
 )
 
 # === Custom Dark Theme Styling ===
+# === Custom Light Theme Styling ===
 st.markdown("""
-   <style>
+    <style>
         body {
-            color: black;
-            background-color: #ffffff;
+            color: #000000 !important;
+            background-color: #ffffff !important;
         }
         .stApp {
-            background-color: #ffffff;
-            font-family: 'Segoe UI', sans-serif;
+            background-color: #ffffff !important;
+            font-family: 'Segoe UI', sans-serif !important;
+            color: #000000 !important;
         }
-        h1, h2, h3, h4, h5 {
-            color: #000;
+        h1, h2, h3, h4, h5, p, span, div, label {
+            color: #000000 !important;
         }
         .stButton>button {
-            background-color: #ff5500;
-            color: #000;
-            border-radius: 6px;
-            height: 3em;
-            width: 25%;
-            font-weight: bold;
-            margin-top: 0.5em;
-          }
+            background-color: #ff5500 !important;
+            color: #000000 !important;
+            border-radius: 6px !important;
+            height: 3em !important;
+            width: 25% !important;
+            font-weight: bold !important;
+            margin-top: 0.5em !important;
+        }
         .stTextInput>div>input {
-            background-color: #ffffff;
-            color: #000000;
+            background-color: #ffffff !important;
+            color: #000000 !important;
         }
         .top-right {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            color: #ff5500;
-            font-weight: 500;
-            font-size: 125%;
+            position: absolute !important;
+            top: 10px !important;
+            right: 20px !important;
+            color: #ff5500 !important;
+            font-weight: 500 !important;
+            font-size: 125% !important;
         }
         .custom-upload {
-            width: 25%;
+            width: 25% !important;
         }
     </style>
     <div class='top-right'>Hayden Meyer</div>
 """, unsafe_allow_html=True)
 
 # === UI Title ===
-st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
+st.markdown("<h1>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
 st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
 
 # === Step 1: Upload CSV ===
