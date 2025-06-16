@@ -35,7 +35,7 @@ st.markdown("""
         height: 3em !important;
         width: 25% !important;
         font-weight: bold !important;
-        font-size: 1.2rem !important;
+        font-size: 125% !important;
         margin-top: 0.5em !important;
     }
 
@@ -47,7 +47,7 @@ st.markdown("""
         height: 3em !important;
         width: 25% !important;
         font-weight: bold !important;
-        font-size: 1.2rem !important;
+        font-size: 125% !important;
         margin-top: 1em !important;
     }
 
@@ -158,9 +158,9 @@ if uploaded_file and run_clicked:
                     progress.progress((i + 1) / len(invoice_ids))
 
             zip_buffer.seek(0)
-            st.success(f"✅ All done! Download the ZIP file containing all PDFs below.")
+            st.success(f"All done! Download the ZIP file containing PDFs below.")
             st.download_button(
-                label="📥 Download ZIP",
+                label="Download ZIP",
                 data=zip_buffer,
                 file_name="coupa_invoice_scans.zip",
                 mime="application/zip"
