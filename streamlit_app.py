@@ -13,64 +13,60 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 # === Custom Light Theme Styling ===
+
 st.markdown("""
-<style>
-    body {
-        color: #000000 !important;
-        background-color: #ffffff !important;
-    }
-    .stApp {
-        background-color: #ffffff !important;
-        font-family: 'Segoe UI', sans-serif !important;
-        color: #000000 !important;
-    }
-    header, .block-container, .st-emotion-cache-1avcm0n {
-        background-color: #ffffff !important;
-    }
-    h1, h2, h3, h4, h5, p, span, div, label {
-        color: #000000 !important;
-    }
-    .stButton>button {
-        background-color: #ff5500 !important;
-        color: #000000 !important;
-        border-radius: 6px !important;
-        height: 3em !important;
-        width: 25% !important;
-        font-weight: bold !important;
-        margin-top: 0.5em !important;
-    }
-    .stTextInput>div>input {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-    }
-    .stFileUploader {
-        background-color: #2c2c2c !important;
-        color: #ffffff !important;
-    }
-    .stFileUploader span, .stFileUploader label, .stFileUploader div, .stFileUploader svg {
-        color: #ffffff !important;
-        fill: #ffffff !important;
-    }
-    .st-emotion-cache-1ayxkht {
-        background-color: #ffffff !important;
-    }
-    .top-right {
-        position: absolute !important;
-        top: 10px !important;
-        right: 20px !important;
-        color: #ff5500 !important;
-        font-weight: 500 !important;
-        font-size: 125% !important;
-    }
-    .custom-upload {
-        width: 25% !important;
-    }
-</style>
-<div class='top-right'>Hayden Meyer</div>
+    <style>
+        body {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+        .stApp {
+            background-color: #ffffff !important;
+            font-family: 'Segoe UI', sans-serif !important;
+            color: #000000 !important;
+        }
+        h1, h2, h3, h4, h5, p, span, div, label {
+            color: #000000 !important;
+        }
+        .stButton>button {
+            background-color: #ff5500 !important;
+            color: #000000 !important;
+            border-radius: 6px !important;
+            height: 3em !important;
+            width: 25% !important;
+            font-weight: bold !important;
+            margin-top: 0.5em !important;
+        }
+        .stTextInput>div>input {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        /* Drag-and-drop area text color */
+        .stFileUploader label, .stFileUploader div {
+            color: #ffffff !important;
+        }
+        /* Fix black background behind uploader label */
+        .stFileUploader > div:first-child {
+            background-color: transparent !important;
+            color: #000000 !important;
+        }
+        .top-right {
+            position: absolute !important;
+            top: 10px !important;
+            right: 20px !important;
+            color: #ff5500 !important;
+            font-weight: 500 !important;
+            font-size: 125% !important;
+        }
+        .custom-upload {
+            width: 25% !important;
+        }
+    </style>
+    <div class='top-right'>Hayden Meyer</div>
 """, unsafe_allow_html=True)
 
 # === UI Title ===
-st.markdown("<h1>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
 st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
 
 # === Step 1: Upload CSV ===
@@ -82,7 +78,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 # === Step 2: Run Script ===
 st.subheader("Step 2: Run Extraction")
 run_clicked = st.button("Run")
-
 if uploaded_file and run_clicked:
     try:
         st.success("Running script...")
