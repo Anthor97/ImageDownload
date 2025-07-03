@@ -7,7 +7,7 @@ import re
 from datetime import datetime
 from requests import request
 
-# === Streamlit Page Config ===
+# Header Style 
 st.set_page_config(
     page_title="Coupa Invoice Downloader",
     page_icon="📄",
@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# === Custom Styling ===
+# Body Styling 
 st.markdown("""
 <style>
     body, .stApp {
@@ -74,13 +74,13 @@ st.markdown("""
 <div class='top-right'>Hayden Meyer</div>
 """, unsafe_allow_html=True)
 
-# === ZIP Timestamp Helper ===
+# ZIP Time stamp Helper 
 def get_local_zipinfo(filename: str) -> zipfile.ZipInfo:
     info = zipfile.ZipInfo(filename)
     info.date_time = datetime.now().timetuple()[:6]
     return info
 
-# === State Initialization ===
+# State 
 if "zip_buffer" not in st.session_state:
     st.session_state.zip_buffer = None
 if "failed_rows" not in st.session_state:
@@ -90,18 +90,18 @@ if "processed" not in st.session_state:
 if "downloaded" not in st.session_state:
     st.session_state.downloaded = False
 
-# === UI Title ===
+# UI Title Style
 st.markdown("<h1 style='color:#000000;'>Coupa Invoice Downloader</h1>", unsafe_allow_html=True)
 st.markdown("Upload your invoice CSV and automatically save PDF scans to a ZIP file for download.")
 
-# === Upload CSV ===
+# Upload CSV 
 if not st.session_state.processed:
     st.subheader("Step 1: Upload CSV File")
     st.markdown('<div class="custom-upload">', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Choose a CSV file with an 'Invoice ID' column", type=["csv"])
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # === Run Extraction ===
+    # Run Extraction
     st.subheader("Step 2: Run Extraction")
     run_clicked = st.button("Run")
 
@@ -114,7 +114,7 @@ if not st.session_state.processed:
             secret = os.environ.get("SECRET")
             COUPA_INSTANCE = os.environ.get("COUPA_INSTANCE")
 
-            # === Authenticate ===
+            # Authenticate 
             token_url = f"https://{COUPA_INSTANCE}.coupahost.com/oauth2/token"
             token_data = {
                 "grant_type": "client_credentials",
@@ -133,7 +133,7 @@ if not st.session_state.processed:
                 "Accept": "application/json"
             }
 
-            # === Load CSV ===
+            # Load CSV
             raw_csv = uploaded_file.getvalue().decode("utf-8")
             delimiter = "\t" if "\t" in raw_csv else ","
             df = pd.read_csv(io.StringIO(raw_csv), delimiter=delimiter)
@@ -207,7 +207,7 @@ if not st.session_state.processed:
         except Exception as e:
             st.error(f"Error: {e}")
 
-# === Show ZIP Download ===
+# Show ZIP Download
 if st.session_state.processed and st.session_state.zip_buffer and not st.session_state.downloaded:
     st.success("All done! Download the ZIP file containing PDFs and failed report (if any).")
     if st.download_button(
